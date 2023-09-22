@@ -47,28 +47,28 @@ struct {
   // input
 #define INPUT_BUF_SIZE 128
   char buf[INPUT_BUF_SIZE];
-  uint r;  // Read index
-  uint w;  // Write index
-  uint e;  // Edit index
+  //uint r;  // Read index
+  //uint w;  // Write index
+  //uint e;  // Edit index
 } cons;
 
 //
 // user write()s to the console go here.
 //
-int
-consolewrite(int user_src, uint64 src, int n)
-{
-  int i;
+//int
+//consolewrite(int user_src, uint64 src, int n)
+//{
+  //int i;
 
-  for(i = 0; i < n; i++){
-    char c;
-    if(either_copyin(&c, user_src, src+i, 1) == -1)
-      break;
-    uartputc(c);
-  }
+  //for(i = 0; i < n; i++){
+    //char c;
+    //if(either_copyin(&c, user_src, src+i, 1) == -1)
+      //break;
+    //uartputc(c);
+  //}
 
-  return i;
-}
+  //return i;
+//}
 
 //
 // user read()s from the console go here.
@@ -76,55 +76,55 @@ consolewrite(int user_src, uint64 src, int n)
 // user_dist indicates whether dst is a user
 // or kernel address.
 //
-int
-consoleread(int user_dst, uint64 dst, int n)
-{
-  uint target;
-  int c;
-  char cbuf;
+//int
+//consoleread(int user_dst, uint64 dst, int n)
+//{
+  //uint target;
+  //int c;
+  //char cbuf;
 
-  target = n;
-  acquire(&cons.lock);
-  while(n > 0){
+  //target = n;
+  //acquire(&cons.lock);
+  //while(n > 0){
     // wait until interrupt handler has put some
     // input into cons.buffer.
-    while(cons.r == cons.w){
-      if(killed(myproc())){
-        release(&cons.lock);
-        return -1;
-      }
-      sleep(&cons.r, &cons.lock);
-    }
+    //while(cons.r == cons.w){
+      //if(killed(myproc())){
+        //release(&cons.lock);
+        //return -1;
+      //}
+      //sleep(&cons.r, &cons.lock);
+    //}
 
-    c = cons.buf[cons.r++ % INPUT_BUF_SIZE];
+    //c = cons.buf[cons.r++ % INPUT_BUF_SIZE];
 
-    if(c == C('D')){  // end-of-file
-      if(n < target){
+    //if(c == C('D')){  // end-of-file
+      //if(n < target){
         // Save ^D for next time, to make sure
         // caller gets a 0-byte result.
-        cons.r--;
-      }
-      break;
-    }
+        //cons.r--;
+      //}
+      //break;
+    //}
 
     // copy the input byte to the user-space buffer.
-    cbuf = c;
-    if(either_copyout(user_dst, dst, &cbuf, 1) == -1)
-      break;
+    //cbuf = c;
+    //if(either_copyout(user_dst, dst, &cbuf, 1) == -1)
+      //break;
 
-    dst++;
-    --n;
+    //dst++;
+    //--n;
 
-    if(c == '\n'){
+    //if(c == '\n'){
       // a whole line has arrived, return to
       // the user-level read().
-      break;
-    }
-  }
-  release(&cons.lock);
+      //break;
+    //}
+  //}
+  //release(&cons.lock);
 
-  return target - n;
-}
+  //return target - n;
+//}
 
 //
 // the console input interrupt handler.
@@ -187,6 +187,6 @@ consoleinit(void)
 
   // connect read and write system calls
   // to consoleread and consolewrite.
-  devsw[CONSOLE].read = consoleread;
-  devsw[CONSOLE].write = consolewrite;
+  //devsw[CONSOLE].read = consoleread;
+  //devsw[CONSOLE].write = consolewrite;
 }
