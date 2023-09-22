@@ -61,7 +61,7 @@ extern volatile int panicked; // from printf.c
 void uartstart();
 */
 
-//muahahahahhahahaha
+
 
 void
 uartinit(void)
