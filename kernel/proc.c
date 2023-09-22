@@ -252,8 +252,8 @@ userinit(void)
   //p->trapframe->epc = 0;      // user program counter
   //p->trapframe->sp = PGSIZE;  // user stack pointer
 
-  safestrcpy(p->name, "initcode", sizeof(p->name));
-  p->cwd = namei("/");
+  //safestrcpy(p->name, "initcode", sizeof(p->name));
+  //p->cwd = namei("/");
 
   p->state = RUNNABLE;
 
@@ -513,6 +513,17 @@ yield(void)
   p->state = RUNNABLE;
   sched();
   release(&p->lock);
+}
+
+void                                                                                                      
+do_my_bidding(void)
+{
+    for (;;) {
+        int cid = cpuid();                                                                                
+        struct proc *proc = myproc();                                                                     
+        printf("Running proc %d on cpu %d\n", proc->pid, cid);                                            
+        yield();                                                                                          
+    } 
 }
 
 // A fork child's very first scheduling by scheduler()
