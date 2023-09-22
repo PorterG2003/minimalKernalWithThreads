@@ -5,7 +5,6 @@
 #include "defs.h"
 
 void main();
-void timerinit();
 
 // entry.S needs one stack per CPU.
 __attribute__ ((aligned (16))) char stack0[4096 * NCPU];
@@ -44,7 +43,6 @@ start()
   w_pmpcfg0(0xf);
 
   // ask for clock interrupts.
-  timerinit();
 
   // keep each CPU's hartid in its tp register, for cpuid().
   int id = r_mhartid();
