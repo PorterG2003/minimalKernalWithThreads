@@ -47,13 +47,13 @@
 #define WriteReg(reg, v) (*(Reg(reg)) = (v))
 
 // the transmit output buffer.
-/*
+
 struct spinlock uart_tx_lock;
 #define UART_TX_BUF_SIZE 32
 char uart_tx_buf[UART_TX_BUF_SIZE];
 uint64 uart_tx_w; // write next to uart_tx_buf[uart_tx_w % UART_TX_BUF_SIZE]
 uint64 uart_tx_r; // read next from uart_tx_buf[uart_tx_r % UART_TX_BUF_SIZE]
-*/
+
 
 extern volatile int panicked; // from printf.c
 
@@ -66,10 +66,10 @@ void uartstart();
 void
 uartinit(void)
 {
-  /*
+  
   // disable interrupts.
   WriteReg(IER, 0x00);
-  */
+  
 
   // special mode to set baud rate.
   WriteReg(LCR, LCR_BAUD_LATCH);
@@ -87,13 +87,13 @@ uartinit(void)
   // reset and enable FIFOs.
   WriteReg(FCR, FCR_FIFO_ENABLE | FCR_FIFO_CLEAR);
 
-  /*
+  
   // enable transmit and receive interrupts.
   WriteReg(IER, IER_TX_ENABLE | IER_RX_ENABLE);
   
 
   initlock(&uart_tx_lock, "uart");
-  */
+  
 }
 
 // add a character to the output buffer and tell the
@@ -180,6 +180,7 @@ uartstart()
 
 // read one input character from the UART.
 // return -1 if none is waiting.
+/*
 int
 uartgetc(void)
 {
@@ -190,6 +191,7 @@ uartgetc(void)
     return -1;
   }
 }
+*/
 
 // handle a uart interrupt, raised because input has
 // arrived, or the uart is ready for more output, or

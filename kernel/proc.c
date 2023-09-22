@@ -47,18 +47,28 @@ struct spinlock wait_lock;
 void
 procinit(void)
 {
+  //printf("hit procinit");
   struct proc *p;
   
   initlock(&pid_lock, "nextpid");
   initlock(&wait_lock, "wait_lock");
+  //printf("init the locks");
   for(p = proc; p < &proc[NPROC]; p++) {
+      //printf("hit the inner for loop of procinit");
       initlock(&p->lock, "proc");
       p->state = UNUSED;
       char *pa = kalloc();
       if(pa == 0)
           panic("kalloc");
-      p->kstack = KSTACK((int) (p - proc)); //this might need to be pa
+
+      //behold the lynch pin of stuff    
+      p->kstack = (uint64) pa;
+
+
+      //p->kstack = KSTACK((int) (p - proc)); //this might need to be pa
+      
   }
+  
 }
 
 // Must be called with interrupts disabled,
@@ -112,9 +122,11 @@ allocpid()
 static struct proc*
 allocproc(void)
 {
+  //printf("reached allocproc");
   struct proc *p;
 
   for(p = proc; p < &proc[NPROC]; p++) {
+    //printf("in inner for loop for allocproc");
     acquire(&p->lock);
     if(p->state == UNUSED) {
       goto found;
@@ -125,6 +137,7 @@ allocproc(void)
   return 0;
 
 found:
+//printf("reached found");
   p->pid = allocpid();
   p->state = USED;
 
@@ -145,10 +158,11 @@ found:
 
   // Set up new context to start executing at forkret,
   // which returns to user space.
+  //printf("seting up context in memory");
   memset(&p->context, 0, sizeof(p->context));
   p->context.ra = (uint64)forkret;
   p->context.sp = p->kstack + PGSIZE;
-
+  //printf("finished setting the context in allocproc");
   return p;
 }
 
@@ -238,6 +252,7 @@ uchar initcode[] = {
 void
 userinit(void)
 {
+  //printf("hit userinit");
   struct proc *p;
 
   p = allocproc();
@@ -246,7 +261,7 @@ userinit(void)
   // allocate one user page and copy initcode's instructions
   // and data into it.
   //uvmfirst(p->pagetable, initcode, sizeof(initcode));
-  //p->sz = PGSIZE;
+  p->sz = PGSIZE;
 
   // prepare for the very first "return" from kernel to user.
   //p->trapframe->epc = 0;      // user program counter
@@ -258,6 +273,19 @@ userinit(void)
   p->state = RUNNABLE;
 
   release(&p->lock);
+
+ //code we got from others, may not be needed or right
+  struct proc  *pnext = p++;
+  while(pnext <&proc[NPROC-10]){
+    pnext=allocproc();
+    pnext->sz = PGSIZE;
+    pnext->state = RUNNABLE;
+    release(&pnext->lock);
+    pnext++;
+    //printf("making process %d",pnext);
+  }
+  //printf("finished making processes");
+  
 }
 
 // Grow or shrink user memory by n bytes.
@@ -450,6 +478,7 @@ wait(uint64 addr)
 void
 scheduler(void)
 {
+  //printf("hit the scheduler");
   struct proc *p;
   struct cpu *c = mycpu();
   
@@ -459,14 +488,18 @@ scheduler(void)
     //intr_on();
 
     for(p = proc; p < &proc[NPROC]; p++) {
+      //printf("going through the inner for loop in scheduler");
       acquire(&p->lock);
       if(p->state == RUNNABLE) {
+        //printf("hit a runnable program");
         // Switch to chosen process.  It is the process's job
         // to release its lock and then reacquire it
         // before jumping back to us.
         p->state = RUNNING;
         c->proc = p;
+        //printf("going through a switchpoint, switching %d with %d via %d and %d",&c,&p,&c->context, &p->context);
         swtch(&c->context, &p->context);
+        //printf("went through a switchpoint");
 
         // Process is done running for now.
         // It should have changed its p->state before coming back.
@@ -531,18 +564,20 @@ do_my_bidding(void)
 void
 forkret(void)
 {
-  //static int first = 1;
-
+  static int first = 1;
+  
   // Still holding p->lock from scheduler.
   release(&myproc()->lock);
-
-  //if (first) {
+  printf("reached Forkret");
+  do_my_bidding();
+  
+  if (first) {
     // File system initialization must be run in the context of a
     // regular process (e.g., because it calls sleep), and thus cannot
     // be run from main().
-  //  first = 0;
+    first = 0;
   //  fsinit(ROOTDEV);
-  //}
+  }
 
   //usertrapret();
 }
@@ -610,7 +645,7 @@ kill(int pid)
       p->killed = 1;
       //if(p->state == SLEEPING){
       //  // Wake process from sleep().
-      //  p->state = RUNNABLE;
+          //p->state = RUNNABLE;
       //}
       release(&p->lock);
       return 0;
@@ -672,13 +707,14 @@ either_copyin(void *dst, int user_src, uint64 src, uint64 len)
 // Print a process listing to console.  For debugging.
 // Runs when user types ^P on console.
 // No lock to avoid wedging a stuck machine further.
-void
+
+/*void
 procdump(void)
 {
   static char *states[] = {
   [UNUSED]    "unused",
   [USED]      "used",
-  //[SLEEPING]  "sleep ",
+  [SLEEPING]  "sleep ",
   [RUNNABLE]  "runble",
   [RUNNING]   "run   ",
   [ZOMBIE]    "zombie"
@@ -698,3 +734,4 @@ procdump(void)
     printf("\n");
   }
 }
+*/
