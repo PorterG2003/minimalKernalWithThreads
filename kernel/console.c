@@ -47,9 +47,9 @@ struct {
   // input
 #define INPUT_BUF_SIZE 128
   char buf[INPUT_BUF_SIZE];
-  //uint r;  // Read index
-  //uint w;  // Write index
-  //uint e;  // Edit index
+  uint r;  // Read index
+  uint w;  // Write index
+  uint e;  // Edit index
 } cons;
 
 //
