@@ -18,7 +18,6 @@ main()
     printf("\n");
     kinit();         // physical page allocator
     procinit();      // process table
-    binit();         // buffer cache
     __sync_synchronize();
     started = 1;
   } else {
