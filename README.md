@@ -4,5 +4,5 @@ Support context switching between kernel threads, but no userspace or virtual me
 # Created by
 - Porter Gardiner
 - Dason Gillespie
-- Ian
-- Gabe
+- Liam Hoyle
+- Gabe Tate
