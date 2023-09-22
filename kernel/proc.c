@@ -16,7 +16,7 @@ int nextpid = 1;
 struct spinlock pid_lock;
 
 extern void forkret(void);
-static void freeproc(struct proc *p);
+//static void freeproc(struct proc *p);
 
 extern char trampoline[]; // trampoline.S
 
@@ -358,17 +358,17 @@ exit(int status)
     panic("init exiting");
 
   // Close all open files.
-  for(int fd = 0; fd < NOFILE; fd++){
-    if(p->ofile[fd]){
-      struct file *f = p->ofile[fd];
-      fileclose(f);
-      p->ofile[fd] = 0;
-    }
-  }
+  //for(int fd = 0; fd < NOFILE; fd++){
+    //if(p->ofile[fd]){
+      //struct file *f = p->ofile[fd];
+      //fileclose(f);
+      //p->ofile[fd] = 0;
+    //}
+  //}
 
-  begin_op();
-  iput(p->cwd);
-  end_op();
+  //begin_op();
+  //iput(p->cwd);
+  //end_op();
   p->cwd = 0;
 
   acquire(&wait_lock);
@@ -377,7 +377,7 @@ exit(int status)
   //reparent(p);
 
   // Parent might be sleeping in wait().
-  wakeup(p->parent);
+  //wakeup(p->parent);
   
   acquire(&p->lock);
 

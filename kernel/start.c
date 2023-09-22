@@ -57,7 +57,7 @@ start()
 // at timervec in kernelvec.S,
 // which turns them into software interrupts for
 // devintr() in trap.c.
-void
+/*void
 timerinit()
 {
   // each CPU has a separate source of timer interrupts.
@@ -84,4 +84,4 @@ timerinit()
 
   // enable machine-mode timer interrupts.
   w_mie(r_mie() | MIE_MTIE);
-}
+}*/

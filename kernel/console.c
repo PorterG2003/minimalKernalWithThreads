@@ -132,7 +132,7 @@ struct {
 // do erase/kill processing, append to cons.buf,
 // wake up consoleread() if a whole line has arrived.
 //
-void
+/*void
 consoleintr(int c)
 {
   acquire(&cons.lock);
@@ -176,7 +176,7 @@ consoleintr(int c)
   }
   
   release(&cons.lock);
-}
+}*/
 
 void
 consoleinit(void)
