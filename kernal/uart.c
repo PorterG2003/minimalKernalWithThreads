@@ -21,13 +21,21 @@
 // see http://byterunner.com/16550.html
 #define RHR 0                 // receive holding register (for input bytes)
 #define THR 0                 // transmit holding register (for output bytes)
+
+
 #define IER 1                 // interrupt enable register
+
+
 #define IER_RX_ENABLE (1<<0)
 #define IER_TX_ENABLE (1<<1)
 #define FCR 2                 // FIFO control register
 #define FCR_FIFO_ENABLE (1<<0)
 #define FCR_FIFO_CLEAR (3<<1) // clear the content of the two FIFOs
+
+
 #define ISR 2                 // interrupt status register
+
+
 #define LCR 3                 // line control register
 #define LCR_EIGHT_BITS (3<<0)
 #define LCR_BAUD_LATCH (1<<7) // special mode to set baud rate
@@ -39,21 +47,27 @@
 #define WriteReg(reg, v) (*(Reg(reg)) = (v))
 
 // the transmit output buffer.
+/*
 struct spinlock uart_tx_lock;
 #define UART_TX_BUF_SIZE 32
 char uart_tx_buf[UART_TX_BUF_SIZE];
 uint64 uart_tx_w; // write next to uart_tx_buf[uart_tx_w % UART_TX_BUF_SIZE]
 uint64 uart_tx_r; // read next from uart_tx_buf[uart_tx_r % UART_TX_BUF_SIZE]
+*/
 
 extern volatile int panicked; // from printf.c
 
+/*
 void uartstart();
+*/
 
 void
 uartinit(void)
 {
+  /*
   // disable interrupts.
   WriteReg(IER, 0x00);
+  */
 
   // special mode to set baud rate.
   WriteReg(LCR, LCR_BAUD_LATCH);
@@ -71,10 +85,13 @@ uartinit(void)
   // reset and enable FIFOs.
   WriteReg(FCR, FCR_FIFO_ENABLE | FCR_FIFO_CLEAR);
 
+  /*
   // enable transmit and receive interrupts.
   WriteReg(IER, IER_TX_ENABLE | IER_RX_ENABLE);
+  
 
   initlock(&uart_tx_lock, "uart");
+  */
 }
 
 // add a character to the output buffer and tell the
@@ -83,8 +100,8 @@ uartinit(void)
 // because it may block, it can't be called
 // from interrupts; it's only suitable for use
 // by write().
-void
-uartputc(int c)
+
+/* uartputc(int c)
 {
   acquire(&uart_tx_lock);
 
@@ -101,7 +118,7 @@ uartputc(int c)
   uart_tx_w += 1;
   uartstart();
   release(&uart_tx_lock);
-}
+}*/
 
 
 // alternate version of uartputc() that doesn't 
@@ -130,6 +147,8 @@ uartputc_sync(int c)
 // in the transmit buffer, send it.
 // caller must hold uart_tx_lock.
 // called from both the top- and bottom-half.
+
+/*
 void
 uartstart()
 {
@@ -155,6 +174,7 @@ uartstart()
     WriteReg(THR, c);
   }
 }
+*/
 
 // read one input character from the UART.
 // return -1 if none is waiting.
@@ -172,6 +192,8 @@ uartgetc(void)
 // handle a uart interrupt, raised because input has
 // arrived, or the uart is ready for more output, or
 // both. called from devintr().
+
+/*
 void
 uartintr(void)
 {
@@ -188,3 +210,4 @@ uartintr(void)
   uartstart();
   release(&uart_tx_lock);
 }
+*/
